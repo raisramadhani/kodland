@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Quiz AI Python{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0 text-center">Login</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required
+                            placeholder="Masukkan username Anda">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required
+                            placeholder="Masukkan password Anda">
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">Login</button>
+                    </div>
+                </form>
+
+                <hr>
+
+                <div class="text-center">
+                    <p class="mb-0">Belum punya akun? <a href="{{ url_for('register') }}">Daftar di sini</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Info -->
+        <div class="card mt-3">
+            <div class="card-body text-center">
+                <h6 class="card-title">Setelah Login:</h6>
+                <p class="small text-muted">Anda dapat langsung memulai quiz dan skor akan tersimpan secara otomatis di
+                    database.</p>
+                <div class="d-flex justify-content-center">
+                    <span class="badge bg-primary me-2">Quiz AI</span>
+                    <span class="badge bg-info me-2">Papan Skor</span>
+                    <span class="badge bg-warning">Tracking Progress</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz - Quiz AI Python{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <!-- Score Display -->
+        <div class="card mb-4">
+            <div class="card-body bg-light">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <h5>Player</h5>
+                        <p class="text-primary"><strong>{{ session.username }}</strong></p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Total Skor</h5>
+                        <p class="text-success"><strong><span id="current-score">{{ session.total_score }}</span>
+                                poin</strong></p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Poin per Jawaban Benar</h5>
+                        <p class="text-info"><strong>10 poin</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Card -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Quiz: Penerapan Model AI ke dalam Aplikasi Python</h5>
+            </div>
+            <div class="card-body">
+                {% if question %}
+                <form id="quiz-form">
+                    <input type="hidden" name="question_id" value="{{ question.id }}">
+
+                    <!-- Question -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Pertanyaan:</h6>
+                        <p class="lead">{{ question.question }}</p>
+                    </div>
+
+                    <!-- Answer Options -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold">Pilihan Jawaban:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="answer" id="option_a" value="A"
+                                        required>
+                                    <label class="form-check-label" for="option_a">
+                                        <strong>A.</strong> {{ question.options[0] }}
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="answer" id="option_b" value="B">
+                                    <label class="form-check-label" for="option_b">
+                                        <strong>B.</strong> {{ question.options[1] }}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="answer" id="option_c" value="C">
+                                    <label class="form-check-label" for="option_c">
+                                        <strong>C.</strong> {{ question.options[2] }}
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="answer" id="option_d" value="D">
+                                    <label class="form-check-label" for="option_d">
+                                        <strong>D.</strong> {{ question.options[3] }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary me-md-2" id="submit-btn">Submit Jawaban</button>
+                        <a href="{{ url_for('quiz') }}" class="btn btn-outline-secondary">Pertanyaan Baru</a>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-warning">
+                    <h6>Tidak ada pertanyaan tersedia!</h6>
+                    <p>Silakan hubungi administrator.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Result Card (Hidden by default) -->
+        <div class="card mt-4" id="result-card" style="display: none;">
+            <div class="card-body">
+                <div id="result-content"></div>
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('quiz') }}" class="btn btn-primary">Pertanyaan Berikutnya</a>
+                    <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-info">Lihat Papan Peringkat</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <a href="{{ url_for('home') }}" class="btn btn-outline-primary w-100">Kembali ke Beranda</a>
+            </div>
+            <div class="col-md-6">
+                <a href="{{ url_for('leaderboard') }}" class="btn btn-outline-info w-100">Papan Peringkat</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('quiz-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const resultCard = document.getElementById('result-card');
+        const resultContent = document.getElementById('result-content');
+        const currentScore = document.getElementById('current-score');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Mengirim...';
+
+            fetch('{{ url_for("submit_answer") }}', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update score
+                        currentScore.textContent = data.new_score;
+
+                        // Show result
+                        let resultHtml = '';
+                        if (data.correct) {
+                            resultHtml = `
+                        <div class="alert alert-success">
+                            <h6><i class="fas fa-check-circle"></i> Jawaban Benar!</h6>
+                            <p>Selamat! Anda mendapat 10 poin.</p>
+                            <p><strong>Skor terbaru:</strong> ${data.new_score} poin</p>
+                        </div>
+                    `;
+                        } else {
+                            resultHtml = `
+                        <div class="alert alert-danger">
+                            <h6><i class="fas fa-times-circle"></i> Jawaban Salah!</h6>
+                            <p>Jawaban yang benar adalah: <strong>${data.correct_answer}</strong></p>
+                            <p><strong>Skor Anda:</strong> ${data.new_score} poin</p>
+                        </div>
+                    `;
+                        }
+
+                        resultContent.innerHTML = resultHtml;
+                        resultCard.style.display = 'block';
+
+                        // Disable form
+                        const inputs = form.querySelectorAll('input[type="radio"]');
+                        inputs.forEach(input => input.disabled = true);
+
+                    } else {
+                        alert('Terjadi kesalahan: ' + data.message);
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit Jawaban';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan jaringan!');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Jawaban';
+                });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Beranda - Quiz AI Python{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="text-center mb-4">Selamat Datang di Quiz AI Python</h1>
+        <p class="text-center lead">Quiz tentang Penerapan Model AI ke dalam Aplikasi Python</p>
+    </div>
+</div>
+
+<!-- Weather Widget -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Widget Ramalan Cuaca</h5>
+            </div>
+            <div class="card-body">
+                <!-- City Input Form -->
+                <form method="GET" action="{{ url_for('home') }}" class="mb-4">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" name="city" placeholder="Masukkan nama kota..."
+                                value="{{ city }}">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">Cek Cuaca</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Current Date -->
+                <div class="alert alert-light">
+                    <strong>Tanggal Hari Ini:</strong> {{ current_date }}
+                </div>
+
+                <!-- Weather Forecast Table -->
+                {% if weather_data %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Hari</th>
+                                <th>Tanggal</th>
+                                <th>Suhu Siang</th>
+                                <th>Suhu Malam</th>
+                                <th>Kondisi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for day in weather_data %}
+                            <tr>
+                                <td><strong>{{ day.day }}</strong></td>
+                                <td>{{ day.date }}</td>
+                                <td>{{ day.day_temp }}°C</td>
+                                <td>{{ day.night_temp }}°C</td>
+                                <td>{{ day.description }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    <strong>Perhatian:</strong> Data cuaca tidak tersedia. Pastikan nama kota benar atau coba lagi
+                    nanti.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quiz Info -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Tentang Quiz</h5>
+            </div>
+            <div class="card-body">
+                <p>Quiz ini berisi pertanyaan seputar penerapan model AI dalam aplikasi Python, meliputi:</p>
+                <ul>
+                    <li>Machine Learning</li>
+                    <li>Deep Learning</li>
+                    <li>Library Python untuk AI</li>
+                    <li>Neural Networks</li>
+                    <li>Data Science</li>
+                </ul>
+                {% if not session.username %}
+                <p class="text-muted">Silakan daftar dan login untuk mulai bermain quiz!</p>
+                <a href="{{ url_for('register') }}" class="btn btn-primary me-2">Daftar</a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary">Login</a>
+                {% else %}
+                <a href="{{ url_for('quiz') }}" class="btn btn-success">Mulai Quiz</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Cara Bermain</h5>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li>Daftar akun baru atau login</li>
+                    <li>Mulai quiz dari menu navigasi</li>
+                    <li>Jawab pertanyaan dengan benar</li>
+                    <li>Setiap jawaban benar = 10 poin</li>
+                    <li>Skor akan terupdate otomatis</li>
+                    <li>Lihat peringkat di papan skor</li>
+                </ol>
+                {% if session.username %}
+                <div class="alert alert-info">
+                    <strong>Skor Anda saat ini:</strong> {{ session.total_score }} poin
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
