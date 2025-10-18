@@ -102,11 +102,9 @@ function createFeedbackElement(parent, className) {
   return feedback;
 }
 
-// Weather widget enhancements
 function initializeWeatherWidget() {
   const cityInput = document.querySelector('input[name="city"]');
   if (cityInput) {
-    // Add popular cities dropdown
     const popularCities = [
       "Jakarta",
       "Surabaya",
@@ -132,7 +130,6 @@ function initializeWeatherWidget() {
 
         this.parentNode.appendChild(suggestions);
 
-        // Add click handlers for city buttons
         suggestions.querySelectorAll(".city-btn").forEach((btn) => {
           btn.addEventListener("click", function () {
             cityInput.value = this.textContent;
@@ -142,7 +139,6 @@ function initializeWeatherWidget() {
       }
     });
 
-    // Remove suggestions when clicking outside
     document.addEventListener("click", function (e) {
       if (
         !e.target.closest('.form-control[name="city"]') &&
@@ -155,9 +151,7 @@ function initializeWeatherWidget() {
   }
 }
 
-// Quiz-specific features
 function initializeQuizFeatures() {
-  // Add keyboard navigation for quiz options
   const quizForm = document.getElementById("quiz-form");
   if (quizForm) {
     document.addEventListener("keydown", function (e) {
@@ -180,32 +174,25 @@ function initializeQuizFeatures() {
       }
     });
 
-    // Add visual feedback for selected options
     const radioButtons = quizForm.querySelectorAll('input[type="radio"]');
     radioButtons.forEach((radio) => {
       radio.addEventListener("change", function () {
-        // Remove previous selection highlighting
         radioButtons.forEach((r) => {
           r.closest(".form-check").classList.remove("selected-option");
         });
 
-        // Highlight current selection
         this.closest(".form-check").classList.add("selected-option");
       });
     });
   }
 
-  // Auto-refresh leaderboard if on leaderboard page
   if (window.location.pathname.includes("leaderboard")) {
-    // Optional: implement auto-refresh every 30 seconds
     setInterval(function () {
-      // You can implement AJAX refresh here
       console.log("Leaderboard auto-refresh check...");
     }, 30000);
   }
 }
 
-// Utility functions
 function showNotification(message, type = "info") {
   const notification = document.createElement("div");
   notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
@@ -218,7 +205,6 @@ function showNotification(message, type = "info") {
 
   document.body.appendChild(notification);
 
-  // Auto-remove after 5 seconds
   setTimeout(() => {
     if (notification.parentNode) {
       notification.parentNode.removeChild(notification);
@@ -226,7 +212,6 @@ function showNotification(message, type = "info") {
   }, 5000);
 }
 
-// Weather data formatting
 function formatTemperature(temp) {
   return Math.round(temp) + "°C";
 }
@@ -254,9 +239,7 @@ function formatDate(dateString) {
   } ${date.getFullYear()}`;
 }
 
-// Quiz timer (optional feature)
 function startQuizTimer(duration = 300) {
-  // 5 minutes default
   const timerElement = document.getElementById("quiz-timer");
   if (!timerElement) return;
 
@@ -271,7 +254,6 @@ function startQuizTimer(duration = 300) {
 
     if (timeLeft <= 0) {
       clearInterval(timer);
-      // Auto-submit form or show time's up message
       showNotification("Waktu habis!", "warning");
     }
 
@@ -279,15 +261,13 @@ function startQuizTimer(duration = 300) {
   }, 1000);
 }
 
-// Progress tracking
 function updateProgress() {
   const progressBar = document.querySelector(".progress-bar");
   if (progressBar) {
-    // Calculate progress based on user score or questions answered
     const currentScore = parseInt(
       document.getElementById("current-score")?.textContent || "0"
     );
-    const maxScore = 100; // Define max score for 100% progress
+    const maxScore = 100;
     const progress = Math.min((currentScore / maxScore) * 100, 100);
 
     progressBar.style.width = progress + "%";
@@ -295,7 +275,6 @@ function updateProgress() {
   }
 }
 
-// Local storage for user preferences
 function saveUserPreference(key, value) {
   try {
     localStorage.setItem("quizApp_" + key, JSON.stringify(value));
@@ -314,16 +293,13 @@ function getUserPreference(key, defaultValue = null) {
   }
 }
 
-// Initialize user preferences
 document.addEventListener("DOMContentLoaded", function () {
-  // Load saved city preference for weather widget
   const cityInput = document.querySelector('input[name="city"]');
   if (cityInput && !cityInput.value) {
     const savedCity = getUserPreference("lastCity", "Jakarta");
     cityInput.value = savedCity;
   }
 
-  // Save city when form is submitted
   const weatherForm = document.querySelector('form[action*="home"]');
   if (weatherForm) {
     weatherForm.addEventListener("submit", function () {
@@ -335,7 +311,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// Add smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   anchor.addEventListener("click", function (e) {
     e.preventDefault();
@@ -349,7 +324,6 @@ document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
   });
 });
 
-// Add loading states for buttons
 document.querySelectorAll("form").forEach((form) => {
   form.addEventListener("submit", function () {
     const submitBtn = this.querySelector('button[type="submit"]');
@@ -358,7 +332,6 @@ document.querySelectorAll("form").forEach((form) => {
       const originalText = submitBtn.textContent;
       submitBtn.textContent = "Memproses...";
 
-      // Re-enable after 5 seconds as fallback
       setTimeout(() => {
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
